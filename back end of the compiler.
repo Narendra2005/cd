@@ -1,0 +1,10 @@
+#include <stdio.h>
+
+int main() {
+    // Intermediate representation (IR) of a simple expression: a = b + c * d
+    int b = 5, c = 3, d = 2;
+    int a;
+    a = b + c * d;
+    printf("Result: %d\n", a);
+return 0;
+}
