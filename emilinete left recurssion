@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <string.h>
+
+// Function to check if a production starts with a specific non-terminal
+int starts_with(char *prod, char non_terminal) {
+  return prod[0] == non_terminal;
+}
+
+// Function to eliminate left recursion for a given non-terminal
+void eliminate_left_recursion(char grammar[][100], char non_terminal) {
+  int i, j;
+  char new_non_terminal[10]; // Name for the new non-terminal
+
+  // Find a left-recursive rule for the non-terminal
+  for (i = 0; grammar[i][0] != '\0'; i++) {
+    if (starts_with(grammar[i], non_terminal) && grammar[i][1] == non_terminal) {
+      break;
+    }
+  }
+
+  if (grammar[i][0] == '\0') {
+    // No left recursion found
+    return;
+  }
+
+  // Create a new non-terminal (e.g., A')
+  sprintf(new_non_terminal, "%c'", non_terminal);
+
+  // Rewrite the left-recursive rule
+  grammar[i][1] = new_non_terminal[0];
+
+  // Create a new rule for the new non-terminal
+  strcpy(grammar[strlen(grammar) - 1], new_non_terminal);
+  strcat(grammar[strlen(grammar) - 1], &(grammar[i][2])); // Append remaining part of the rule
+  strcat(grammar[strlen(grammar) - 1], new_non_terminal); // Append new non-terminal for recursion
+
+  // Update the left-recursive rule to use the new non-terminal
+  for (j = 0; grammar[j][0] != '\0'; j++) {
+    if (starts_with(grammar[j], non_terminal) && grammar[j][1] != new_non_terminal[0]) {
+      strcat(grammar[j], new_non_terminal);
+    }
+  }
+}
+
+int main() {
+  char grammar[][100] = {
+    "E -> E + T",
+    "E -> T",
+    "T -> T * F",
+    "T -> F",
+    "F -> (E)",
+    "F -> id",
+    "\0" // Null terminator
+  };
+
+  int i;
+
+  // Eliminate left recursion for each non-terminal
+  for (i = 0; grammar[i][0] != '\0'; i++) {
+    eliminate_left_recursion(grammar, grammar[i][0]);
+  }
+
+  printf("Grammar after eliminating left recursion:\n");
+  for (i = 0; grammar[i][0] != '\0'; i++) {
+    printf("%s\n", grammar[i]);
+  }
+
+  return 0;
+}
