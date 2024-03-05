@@ -1,0 +1,21 @@
+%{
+#include <stdio.h>
+int space_count = 0;
+int newline_count = 0;
+%}
+
+%%
+[ \t]    { space_count++; }
+\n       { newline_count++; }
+.        { }
+%%
+
+int main()
+{
+    yyin = fopen("input.txt", "r");
+    yylex();
+    printf("Number of Whitespaces: %d\n", space_count);
+    printf("Number of Newline Characters: %d\n", newline_count);
+    fclose(yyin);
+    return 0;
+}
