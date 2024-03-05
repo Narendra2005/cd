@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_SIZE 100
+
+// Structure to represent a symbol table entry
+typedef struct {
+  char name[50];
+  int address;
+} SymbolTableEntry;
+
+// Symbol table implementation
+SymbolTableEntry table[MAX_SIZE];
+int table_size = 0;
+
+// Function to search for a symbol in the table
+int search(char *name) {
+  for (int i = 0; i < table_size; i++) {
+    if (strcmp(table[i].name, name) == 0) {
+      return table[i].address;
+    }
+  }
+  return -1; // Symbol not found
+}
+
+// Function to insert a symbol into the table
+void insert(char *name, int address) {
+  if (table_size == MAX_SIZE) {
+    printf("Symbol table full!\n");
+    return;
+  }
+
+  strcpy(table[table_size].name, name);
+  table[table_size].address = address;
+  table_size++;
+}
+
+// Function to display the symbol table
+void display() {
+  if (table_size == 0) {
+    printf("Symbol table is empty!\n");
+    return;
+  }
+
+  printf("Symbol table:\n");
+  printf("%-20s %10s\n", "Name", "Address");
+  for (int i = 0; i < table_size; i++) {
+    printf("%-20s %10d\n", table[i].name, table[i].address);
+  }
+}
+
+int main() {
+  int choice, address;
+  char name[50];
+
+  while (1) {
+    printf("\n1. Search\n");
+    printf("2. Insert\n");
+    printf("3. Display\n");
+    printf("4. Exit\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+      case 1:
+        printf("Enter symbol name: ");
+        scanf("%s", name);
+        address = search(name);
+        if (address == -1) {
+          printf("Symbol not found!\n");
+        } else {
+          printf("Symbol %s found at address %d\n", name, address);
+        }
+        break;
+      case 2:
+        printf("Enter symbol name: ");
+        scanf("%s", name);
+        printf("Enter symbol address: ");
+        scanf("%d", &address);
+        insert(name, address);
+        break;
+      case 3:
+        display();
+        break;
+      case 4:
+        exit(0);
+      default:
+        printf("Invalid choice!\n");
+    }
+  }
+
+  return 0;
+}
