@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <string.h>
+
+// Function to find the longest common prefix (LCP) of two strings
+int find_lcp(char *str1, char *str2) {
+  int i = 0;
+  while (str1[i] != '\0' && str2[i] != '\0' && str1[i] == str2[i]) {
+    i++;
+  }
+  return i;
+}
+
+// Function to eliminate left factoring for a given non-terminal
+void eliminate_left_factoring(char grammar[][100], char non_terminal) {
+  int i, j, lcp_length;
+  char prefix[100];
+
+  // Find productions for the non-terminal
+  for (i = 0; grammar[i][0] != '\0'; i++) {
+    if (grammar[i][0] == non_terminal) {
+      break;
+    }
+  }
+
+  if (grammar[i][0] == '\0') {
+    // No productions for the non-terminal found
+    return;
+  }
+
+  // Find the longest common prefix (LCP) of all productions
+  lcp_length = find_lcp(grammar[i], grammar[i + 1]);
+  for (j = i + 2; grammar[j][0] != '\0'; j++) {
+    int current_lcp = find_lcp(grammar[i], grammar[j]);
+    lcp_length = current_lcp < lcp_length ? current_lcp : lcp_length;
+  }
+
+  // Extract the prefix
+  strncpy(prefix, grammar[i], lcp_length);
+  prefix[lcp_length] = '\0';
+
+  // Rewrite the productions
+  if (lcp_length > 0) {
+    grammar[i][lcp_length] = '\0'; // Terminate the first production at the prefix length
+    sprintf(grammar[strlen(grammar) - 1], "%c -> %s%c'", non_terminal, prefix, non_terminal); // New production with the prefix and new non-terminal
+    for (j = i + 1; grammar[j][0] != '\0'; j++) {
+      memmove(grammar[j], grammar[j] + lcp_length, strlen(grammar[j]) - lcp_length + 1); // Shift remaining parts of productions
+      strcat(grammar[j], "'"); // Append the new non-terminal to remaining productions
+    }
+  }
+}
+
+int main() {
+  char grammar[][100] = {
+    "A -> xBy",
+    "A -> xCz",
+    "B -> w",
+    "C -> v",
+    "\0" // Null terminator
+  };
+
+  int i;
+
+  // Eliminate left factoring for each non-terminal
+  for (i = 0; grammar[i][0] != '\0'; i++) {
+    eliminate_left_factoring(grammar, grammar[i][0]);
+  }
+
+  printf("Grammar after eliminating left factoring:\n");
+  for (i = 0; grammar[i][0] != '\0'; i++) {
+    printf("%s\n", grammar[i]);
+  }
+
+  return 0;
+}
