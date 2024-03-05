@@ -1,0 +1,17 @@
+%{
+#include <stdio.h>
+%}
+
+%%
+"//"([^\\n])*   { printf("Line is a comment: %s\n", yytext); }
+"/*"([^*]|\*+[^*/])*"*+/"   { printf("Line is a comment: %s\n", yytext); }
+.          { printf("Not a comment: %s\n", yytext); }
+%%
+
+int main()
+{
+    yyin = fopen("input.c", "r");
+    yylex();
+    fclose(yyin);
+    return 0;
+}
