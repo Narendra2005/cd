@@ -1,0 +1,43 @@
+%{
+#include <stdio.h>
+%}
+
+%option noyywrap
+
+DIGIT       [0-9]
+LETTER      [a-zA-Z]
+ID          {LETTER}({LETTER}|{DIGIT})*
+COMMENT     ("//".*|\/\*[^*]*\*\/)
+
+%%
+{ID}        { }
+[ \t\n]+    { }
+.           { }
+
+%%
+int char_count = 0;
+int line_count = 0;
+int word_count = 0;
+
+int main() {
+    yyin = fopen("sample.c", "r");
+    if (!yyin) {
+        printf("Failed to open input file.\n");
+        return 1;
+    }
+
+    int c;
+    while ((c = yylex()) != 0) {
+        char_count++;
+        if (c == '\n') line_count++;
+    }
+
+    // Increment line count as there might be no new line at the end of file
+    if (char_count > 0) line_count++;
+
+    printf("Number of characters: %d\n", char_count);
+    printf("Number of lines: %d\n", line_count);
+
+    fclose(yyin);
+    return 0;
+}
