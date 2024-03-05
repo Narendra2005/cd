@@ -1,0 +1,26 @@
+%{
+#include <stdio.h>
+int identifier_count = 0;
+int constant_count = 0;
+int operator_count = 0;
+%}
+
+%%
+[ \t\n]    { } // ignore spaces, tabs, and newlines
+"/*"([^*]|\*+[^*/])*"*+/"   { } // ignore comments
+[a-zA-Z_][a-zA-Z0-9_]{1,30}   { identifier_count++; }
+[0-9]+     { constant_count++; }
+[-+*/=<>]  { operator_count++; }
+.          { }
+%%
+
+int main()
+{
+    yyin = fopen("input.c", "r");
+    yylex();
+    printf("Number of Identifiers: %d\n", identifier_count);
+    printf("Number of Constants: %d\n", constant_count);
+    printf("Number of Operators: %d\n", operator_count);
+    fclose(yyin);
+    return 0;
+}
