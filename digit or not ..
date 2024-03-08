@@ -3,11 +3,13 @@
 %}
 
 %%
-[0-9]+ {
-    printf("Input is a digit: %s\n", yytext);
+[A-Z]+ {
+    printf("Input is a CAPITAL: %s\n", yytext);
+    return 0; // Return to stop further processing
 }
 .|\n {
-    printf("Input is not a digit\n");
+    printf("Input is not a CAPTIAL\n");
+    return 0; // Return to stop further processing
 }
 %%
 
